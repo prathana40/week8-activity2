@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+
+const requireAuth = require("../middleware/requireAuth");
+
 const {
   getAllTours,
   getTourById,
@@ -8,6 +11,8 @@ const {
   deleteTour,
 } = require("../controllers/tourControllers");
 
+// protect all routes below
+router.use(requireAuth);
 
 router.get("/", getAllTours);
 router.post("/", createTour);
