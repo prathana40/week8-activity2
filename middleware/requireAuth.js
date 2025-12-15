@@ -9,22 +9,34 @@ const requireAuth = async (req, res, next) => {
     return res.status(401).json({ error: "Authorization token required" });
   }
 
-//   console.log(authorization);
-//   console.log(authorization.split(" "));
-//   console.log(authorization.split(" ")[0]);
-//   console.log(authorization.split(" ")[1]);
 
-  const token = authorization.split(" ")[1];
+  console.log("Raw authorization header:", authorization);
+
+  
+  const parts = authorization.split(" ");
+  console.log("Authorization split into parts:", parts);
+
+ 
+  console.log("First part (expected 'Bearer'):", parts[0]);
+  console.log("Second part (the token):", parts[1]);
+
+  const token = parts[1];
 
   try {
+ 
     const { _id } = jwt.verify(token, process.env.SECRET);
+    console.log("Decoded JWT payload:", { _id });
 
+    
     req.user = await User.findOne({ _id }).select("_id");
+    console.log("User found and attached to request:", req.user);
+
+   
     next();
   } catch (error) {
-    console.log(error);
+    console.log("JWT verification failed:", error);
     res.status(401).json({ error: "Request is not authorized" });
   }
 };
 
-module.exports = requireAuth;
+module.exports = requireAuth; 
